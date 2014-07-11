@@ -160,3 +160,14 @@ def findvalue(expr, node, **kwargs):
 @api
 def findvalues(expr, node, **kwargs):
     return XPath.get(expr).findvalues(node, **kwargs)
+
+def validate(expr):
+    try:
+        scanner = xpath.parser.XPathScanner(str(expr))
+        parser = xpath.parser.XPath(scanner)
+        parsed = parser.XPath()
+        print 'VALID: %s -> %s' % (expr,parsed)
+    except Exception as e:
+        print 'INVALID: %s' % expr
+        print '\tREASON: %s' % e.message
+        raise

@@ -596,6 +596,22 @@ def make_axes():
     """Define functions to walk each of the possible XPath axes."""
 
     @axisfn()
+    def target(node):
+        return node.childNodes # TODO: return association targets
+
+    @axisfn()
+    def target_graph(node):
+        return node.childNodes # TODO: return association targets (recursive)
+
+    @axisfn()
+    def subject(node):
+        return node.parentNode # TODO: return association subject
+
+    @axisfn()
+    def subject_graph(node):
+        return node.parentNode # TODO: return association subject (recursive)
+
+    @axisfn()
     def child(node):
         return node.childNodes
 
@@ -823,6 +839,74 @@ class AxisStep(Expr):
 #
 # Node tests.
 #
+
+class ComponentTest(object):
+    def __init__(self, name=None):
+        self.name = name
+
+    def match(self, node, axis, context):
+        return (node.nodeType == node.PROCESSING_INSTRUCTION_NODE and # TODO: verify this node is type Component
+                (self.name is None or node.target == self.name))
+
+    def __str__(self):
+        if self.name is None:
+            name = ''
+        elif "'" in self.name:
+            name = '"%s"' % self.name
+        else:
+            name = "'%s'" % self.name
+        return 'component(%s)' % name
+
+class ResourceTest(object):
+    def __init__(self, name=None):
+        self.name = name
+
+    def match(self, node, axis, context):
+        return (node.nodeType == node.PROCESSING_INSTRUCTION_NODE and # TODO: verify this node is type Resource
+                (self.name is None or node.target == self.name))
+
+    def __str__(self):
+        if self.name is None:
+            name = ''
+        elif "'" in self.name:
+            name = '"%s"' % self.name
+        else:
+            name = "'%s'" % self.name
+        return 'resource(%s)' % name
+
+class EventTest(object):
+    def __init__(self, name=None):
+        self.name = name
+
+    def match(self, node, axis, context):
+        return (node.nodeType == node.PROCESSING_INSTRUCTION_NODE and # TODO: verify this node is type Event
+                (self.name is None or node.target == self.name))
+
+    def __str__(self):
+        if self.name is None:
+            name = ''
+        elif "'" in self.name:
+            name = '"%s"' % self.name
+        else:
+            name = "'%s'" % self.name
+        return 'event(%s)' % name
+
+class AssociationTest(object):
+    def __init__(self, name=None):
+        self.name = name
+
+    def match(self, node, axis, context):
+        return (node.nodeType == node.PROCESSING_INSTRUCTION_NODE and # TODO: verify this node is type Association
+                (self.name is None or node.target == self.name))
+
+    def __str__(self):
+        if self.name is None:
+            name = ''
+        elif "'" in self.name:
+            name = '"%s"' % self.name
+        else:
+            name = "'%s'" % self.name
+        return 'association(%s)' % name
 
 class Test(object):
     """Abstract base class for node tests."""

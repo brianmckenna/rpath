@@ -170,4 +170,3 @@ def validate(expr):
     except Exception as e:
         print 'INVALID: %s' % expr
         print '\tREASON: %s' % e.message
-        raise

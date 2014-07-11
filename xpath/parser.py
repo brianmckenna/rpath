@@ -9,6 +9,10 @@ class XPathScanner(Scanner):
     patterns = [
         ("r'\\:'", re.compile('\\:')),
         ("r'node\\s*\\('", re.compile('node\\s*\\(')),
+        ("r'component\\s*\\('", re.compile('component\\s*\\(')),
+        ("r'resource\\s*\\('", re.compile('resource\\s*\\(')),
+        ("r'event\\s*\\('", re.compile('event\\s*\\(')),
+        ("r'association\\s*\\('", re.compile('association\\s*\\(')),
         ("r'text\\s*\\('", re.compile('text\\s*\\(')),
         ("r'comment\\s*\\('", re.compile('comment\\s*\\(')),
         ("r'processing-instruction\\s*\\('", re.compile('processing-instruction\\s*\\(')),
@@ -32,8 +36,8 @@ class XPathScanner(Scanner):
         ("r'or'", re.compile('or')),
         ('\\s+', re.compile('\\s+')),
         ('END', re.compile('$')),
-        ('FORWARD_AXIS_NAME', re.compile('child|descendant-or-self|attribute|self|descendant|following-sibling|following|namespace')),
-        ('REVERSE_AXIS_NAME', re.compile('parent|preceding-sibling|preceding|ancestor-or-self|ancestor')),
+        ('FORWARD_AXIS_NAME', re.compile('target|target_graph|child|descendant-or-self|attribute|self|descendant|following-sibling|following|namespace')),
+        ('REVERSE_AXIS_NAME', re.compile('subject|subject_graph|parent|preceding-sibling|preceding|ancestor-or-self|ancestor')),
         ('NCNAME', re.compile('[a-zA-Z_][a-zA-Z0-9_\\-\\.\\w]*(?!\\()')),
         ('FUNCNAME', re.compile('[a-zA-Z_][a-zA-Z0-9_\\-\\.\\w]*')),
         ('DQUOTE', re.compile('\\"(?:[^\\"])*\\"')),
@@ -339,6 +343,62 @@ class XPath(Parser):
         else:# == "r'node\\s*\\('"
             AnyKindTest = self.AnyKindTest()
             return AnyKindTest
+
+    def ComponentTest(self):
+        self._scan("r'component\\s*\\('")
+        name = None
+        if self._peek('NCNAME', "r'\\)'", 'DQUOTE', 'SQUOTE') != "r'\\)'":
+            _token_ = self._peek('NCNAME', 'DQUOTE', 'SQUOTE')
+            if _token_ == 'NCNAME':
+                NCNAME = self._scan('NCNAME')
+                name = NCNAME
+            else:# in ['DQUOTE', 'SQUOTE']
+                StringLiteral = self.StringLiteral()
+                name = StringLiteral
+        self._scan("r'\\)'")
+        return X.ComponentTest(name)
+
+    def ResourceTest(self):
+        self._scan("r'resource\\s*\\('")
+        name = None
+        if self._peek('NCNAME', "r'\\)'", 'DQUOTE', 'SQUOTE') != "r'\\)'":
+            _token_ = self._peek('NCNAME', 'DQUOTE', 'SQUOTE')
+            if _token_ == 'NCNAME':
+                NCNAME = self._scan('NCNAME')
+                name = NCNAME
+            else:# in ['DQUOTE', 'SQUOTE']
+                StringLiteral = self.StringLiteral()
+                name = StringLiteral
+        self._scan("r'\\)'")
+        return X.ResourceTest(name)
+
+    def EventTest(self):
+        self._scan("r'event\\s*\\('")
+        name = None
+        if self._peek('NCNAME', "r'\\)'", 'DQUOTE', 'SQUOTE') != "r'\\)'":
+            _token_ = self._peek('NCNAME', 'DQUOTE', 'SQUOTE')
+            if _token_ == 'NCNAME':
+                NCNAME = self._scan('NCNAME')
+                name = NCNAME
+            else:# in ['DQUOTE', 'SQUOTE']
+                StringLiteral = self.StringLiteral()
+                name = StringLiteral
+        self._scan("r'\\)'")
+        return X.EventTest(name)
+
+    def AssociationTest(self):
+        self._scan("r'association\\s*\\('")
+        name = None
+        if self._peek('NCNAME', "r'\\)'", 'DQUOTE', 'SQUOTE') != "r'\\)'":
+            _token_ = self._peek('NCNAME', 'DQUOTE', 'SQUOTE')
+            if _token_ == 'NCNAME':
+                NCNAME = self._scan('NCNAME')
+                name = NCNAME
+            else:# in ['DQUOTE', 'SQUOTE']
+                StringLiteral = self.StringLiteral()
+                name = StringLiteral
+        self._scan("r'\\)'")
+        return X.AssociationTest(name)
 
     def PITest(self):
         self._scan("r'processing-instruction\\s*\\('")
